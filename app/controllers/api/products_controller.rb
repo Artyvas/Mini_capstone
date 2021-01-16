@@ -10,7 +10,7 @@ class Api::ProductsController < ApplicationController
   end
 
   def show
-    @product = Product.find_by(id: params["id"])
+    @product = Product.find_by(id: params[:id])
     render "show.json.jb"
   end
 
@@ -28,5 +28,25 @@ class Api::ProductsController < ApplicationController
     )
     @product.save
     render "show.json.jb"
+  end
+
+  def update
+    @product = Product.find_by(id: params[:id])
+    @product.name = params[:name] || @product.name
+    @product.brand = params[:brand] || @product.brand
+    @product.size = params[:size] || @product.size
+    @product.price = params[:price] || @product.price
+    @product.category = params[:category] || @product.category
+    @product.quantity = params[:quantity] || @product.quantity
+    @product.image_url = params[:image_url] || @product.image_url
+    @product.description = params[:description] || @product.description
+    @product.save
+    render "show.json.jb"
+  end
+
+  def destroy
+    product = Product.find_by(id: params[:id])
+    product.destroy
+    render json: { message: "Product successfully deleted" }
   end
 end
