@@ -26,8 +26,11 @@ class Api::ProductsController < ApplicationController
       image_url: params[:image_url],
       description: params[:description],
     )
-    @product.save
+    if @product.save
     render "show.json.jb"
+    else
+      render json { message: "Error! Product failed to save"}
+    end
   end
 
   def update
@@ -40,8 +43,11 @@ class Api::ProductsController < ApplicationController
     @product.quantity = params[:quantity] || @product.quantity
     @product.image_url = params[:image_url] || @product.image_url
     @product.description = params[:description] || @product.description
-    @product.save
+    if @product.save
     render "show.json.jb"
+    else
+      render json { message: "Error! Failed to update!"}
+    end
   end
 
   def destroy
