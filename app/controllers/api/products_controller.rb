@@ -6,6 +6,26 @@ class Api::ProductsController < ApplicationController
 
   def index
     @products = Product.all
+
+    if params[:search]
+      @products = @products.where("name ILIKE?", "%#{params[:search]}%")
+    end
+
+    if params[:discount] == "true"
+      @products = @products.where("price < ?", 10)
+    end
+
+    if params[:sort] == "price" && params[:sort_order] == "asc"
+      @products = @products.order(price: :asc)
+    
+    elsif params[:sort] == "price" && params[:sort_order] == "desc"
+      @products = @products.order(price: :desc)
+    else
+      @products = @products.order(id: :asc)
+
+    end
+
+
     render "index.json.jb"
   end
 
@@ -26,13 +46,13 @@ class Api::ProductsController < ApplicationController
       image_url: params[:image_url],
       description: params[:description],
     )
-    @product.save
+    # @product.save
     
-    # if @product.save
-    #   render "show.json.jb"
-    # else
-    #   render json { message: "Error! Product failed to save"}
-    # end
+    if @product.save
+      render "show.json.jb"
+    else
+      render json: { errors: @product.errors.full_messages }, status: 422
+    end
   end
 
   def update
@@ -46,13 +66,13 @@ class Api::ProductsController < ApplicationController
     @product.image_url = params[:image_url] || @product.image_url
     @product.description = params[:description] || @product.description
     
-    @product.save
+    # @product.save
 
-    # if @product.save
-    # render "show.json.jb"
-    # else
-    #   render json { message: "Error! Failed to update!"}
-    # end
+    if @product.save
+      render "show.json.jb"
+    else
+      render json: { errors: @product.errors.full_messages }, status: 422
+    end
   end
 
   def destroy
@@ -60,4 +80,6 @@ class Api::ProductsController < ApplicationController
     product.destroy
     render json: { message: "Product successfully deleted" }
   end
+
+  
 end
