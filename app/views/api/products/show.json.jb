@@ -9,6 +9,7 @@
   discounted: @product.is_discounted?,
   category: @product.category,
   quantity: @product.quantity,
+  supplier: product.supplier,
   image_url: @product.image_url,
   description: @product.description,
 }
