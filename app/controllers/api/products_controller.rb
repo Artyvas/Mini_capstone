@@ -1,4 +1,6 @@
 class Api::ProductsController < ApplicationController
+  before_action :authenticate_admin, except: [:index, :show]
+
   def product_method
     @message = "Hello!"
     render "products.json.jb"
@@ -17,14 +19,11 @@ class Api::ProductsController < ApplicationController
 
     if params[:sort] == "price" && params[:sort_order] == "asc"
       @products = @products.order(price: :asc)
-    
     elsif params[:sort] == "price" && params[:sort_order] == "desc"
       @products = @products.order(price: :desc)
     else
       @products = @products.order(id: :asc)
-
     end
-
 
     render "index.json.jb"
   end
@@ -47,7 +46,7 @@ class Api::ProductsController < ApplicationController
       description: params[:description],
     )
     # @product.save
-    
+
     if @product.save
       render "show.json.jb"
     else
@@ -65,7 +64,7 @@ class Api::ProductsController < ApplicationController
     @product.quantity = params[:quantity] || @product.quantity
     @product.image_url = params[:image_url] || @product.image_url
     @product.description = params[:description] || @product.description
-    
+
     # @product.save
 
     if @product.save
@@ -80,6 +79,4 @@ class Api::ProductsController < ApplicationController
     product.destroy
     render json: { message: "Product successfully deleted" }
   end
-
-  
 end
