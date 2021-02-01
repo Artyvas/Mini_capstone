@@ -4,18 +4,20 @@ class Api::CartedProductsController < ApplicationController
       product_id: params[:product_id],
       quantity: params[:quantity],
       status: "carted",
-      order_id: nil,
     )
-    if @cartedproduct.save
-      render "show.json.jb"
-    else
-      render json: { errors: @order.errors.full_messages }, status: 422
-    end
+    @cartedproduct.save
+    render "show.json.jb"
   end
 
   def index
-    @cartedproducts = CartedProduct.all
-
+    @cartedproducts = current_user.carted_products.where(status: "carted")
     render "index.json.jb"
+  end
+
+  def destroy
+    carted_product = CartedProduct.find_by(id: params[:id])
+    carted_product.status = "removed"
+    carted_product.save
+    render json: { status: "Carted product successfully removed!" }
   end
 end
